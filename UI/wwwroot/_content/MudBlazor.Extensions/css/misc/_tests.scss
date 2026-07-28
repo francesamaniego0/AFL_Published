@@ -1,0 +1,38 @@
+﻿/*.mud-ex-labeled-hr {
+    border: none;
+    height: 5px;
+    background: var(--mud-palette-primary);*/ /* Change this to your preferred color */
+/*position: relative;
+}*/
+
+
+.mud-ex-color-edit-picker {
+    margin: 0;
+    padding: 0;    
+        
+    .mud-paper {
+        overflow: auto;        
+        max-height: 435px;
+        height: 100%;
+        margin: 0;        
+        padding: 0;
+    }
+}
+
+.mud-ex-color-edit {
+    .mud-icon-root {
+        fill: inherit;
+    }
+}
+
+.mud-ex-color-edit-picker-html-list-item:not(.mud-ex-default-list-item) {
+    .mud-icon-root {
+        fill: attr(data-color);
+    }
+}
+
+.mud-ex-default-list-item {
+    .mud-icon-root {
+        fill: currentColor;
+    }
+}

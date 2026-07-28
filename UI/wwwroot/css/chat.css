@@ -1,0 +1,254 @@
+﻿
+.chat-page {
+    height: calc(100vh - 180px);
+    overflow: hidden;
+}
+
+.thread-panel {
+    height: 100%;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 180px);
+}
+
+.thread-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.thread-item {
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-radius: 0;
+}
+
+    .thread-item:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+    }
+
+body.mud-theme-dark .thread-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.thread-selected {
+    background-color: rgba(25, 118, 210, 0.15); /* primary-ish light */
+}
+
+body.mud-theme-dark .thread-selected {
+    background-color: rgba(144, 202, 249, 0.15);
+}
+
+.attachment-preview {
+    margin-left: 48px;
+    margin-bottom: 8px;
+}
+
+.chat-image-preview {
+    max-width: 220px;
+    border-radius: 8px;
+    margin-top: 6px;
+}
+
+.chat-container {
+    height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    flex-shrink: 0;
+    padding: 20px;
+}
+
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 20px;
+}
+
+.chat-footer {
+    flex-shrink: 0;
+    padding: 12px;
+}
+
+.empty-chat {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: gray;
+}
+
+.chat-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+
+    .chat-row.customer {
+        justify-content: flex-start;
+    }
+
+    .chat-row.agent {
+        justify-content: flex-end;
+    }
+
+.chat-bubble {
+    max-width: 65%;
+    padding: 12px 14px;
+    border-radius: 18px;
+    word-break: break-word;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.chat-time {
+    font-size: 11px;
+    opacity: .7;
+    margin-top: 4px;
+}
+
+.customer .chat-bubble {
+    background: #ffffff;
+    color: #333333;
+    border: 1px solid #e0e0e0;
+    border-bottom-left-radius: 6px;
+}
+
+.agent .chat-bubble {
+    background: #1976d2;
+    color: #ffffff;
+    border-bottom-right-radius: 6px;
+}
+
+.thread-item .mud-avatar {
+    flex-shrink: 0;
+}
+
+.chat-meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+.chat-meta-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.badge-type {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.badge-individual {
+    background: #e8f0fe;
+    color: #1976d2;
+}
+
+.badge-corporate {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.thread-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: gray;
+    margin-top: 4px;
+}
+
+.thread-search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chat-date-separator {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #777;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+    .chat-date-separator::before,
+    .chat-date-separator::after {
+        content: "";
+        flex: 1;
+        border-top: 1px solid #ddd;
+    }
+
+    .chat-date-separator::before {
+        margin-right: 10px;
+    }
+
+    .chat-date-separator::after {
+        margin-left: 10px;
+    }
+
+
+.unread-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f44336;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.thread-title {
+    font-weight: 500;
+}
+
+    .thread-title.unread {
+        font-weight: 700;
+    }
+
+.thread-message {
+    opacity: .75;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+    .thread-message.unread {
+        opacity: 1;
+        font-weight: 600;
+    }
+
+
+.avatar-unread {
+    position: relative;
+}
+
+    .avatar-unread::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ff3b30;
+        border: 2px solid #2d2d2d;
+    }
+

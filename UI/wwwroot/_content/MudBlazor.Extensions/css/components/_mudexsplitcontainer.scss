@@ -1,0 +1,36 @@
+﻿
+.mud-ex-split-panel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /*gap: 3px;  */
+}
+
+.mud-ex-splitter {
+    &.mud-ex-divider-horizontal {
+        cursor: row-resize;
+    }
+
+    &.mud-ex-divider-vertical {
+        cursor: col-resize;
+    }
+    /*    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M2 0 v30 M5 0 v30 M8 0 v30' fill='none' stroke='black'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;*/
+}
+
+.mud-ex-splitter-collapsed-slide-bar-content-v {
+    width: 100%;
+    height: 100%;
+}
+
+.mud-ex-splitter-collapsed-slide-bar-content-v > * {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.mud-ex-centered-content {
+    display: flex;
+    justify-content: center; /* For horizontal centering */
+    align-items: center; /* For vertical centering */
+}

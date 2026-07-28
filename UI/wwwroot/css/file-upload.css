@@ -1,0 +1,83 @@
+﻿.file-upload-input {
+    position: absolute;
+/*    width: 300px !important;*/
+    /*    height: 200px!important;*/
+    max-height: 200px !important;
+    overflow: hidden;
+    z-index: 10;
+    opacity: 0;
+}
+
+.hover-container {
+    /* position: relative;
+    display: inline-block;*/
+/*    height: 350px !important;*/
+    overflow: hidden;
+}
+
+.file-container {
+    height: 350px !important;
+}
+
+.mud-file-preview {
+    height: 200px !important;
+    width: 300px !important;
+    border: 1px dashed #ccc;
+    z-index: 9;
+}
+
+.mud-file-upload-dragarea {
+    height: 200px !important;
+/*    width: 300px !important;*/
+    width: 100%
+}
+
+/*.hover-image {
+    width: 50px;
+    transition: opacity 0.3s ease;
+}*/
+
+/* Label (hidden by default) */
+.hover-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px !important;
+    height: 200px !important;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 9;
+}
+
+
+.hover-container {
+    position: relative;
+}
+
+.mud-file-preview {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.remove-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+}
+
+
+.hover-container:hover .mud-file-preview {
+    opacity: 0.3;
+}
+
+.hover-container:hover .hover-label {
+    opacity: 1;
+}
+
+.hover-container:hover .remove-btn {
+    opacity: 1;
+}
