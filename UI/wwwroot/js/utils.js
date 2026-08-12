@@ -87,6 +87,26 @@ async function refreshToken(baseUrl) {
     });
 }
 
+window.hasAccessToken = function (baseUrl) {
+    return new Promise((resolve) => {
+        $.ajax({
+            url: baseUrl + '/Auth/has-access-token',
+            type: 'GET',
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (response) {
+                console.log('/Auth/has-access-token', response);
+                resolve(response === true);
+            },
+            error: function (err) {
+                console.error('err/Auth/has-access-token', err);
+                resolve(false);
+            }
+        });
+    });
+};
+
 window.blazorExtensions = {
     ReadCookie: function (name) {
         let value = "; " + document.cookie;
