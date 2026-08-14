@@ -143,15 +143,44 @@ async function decodeJwtAsync(token) {
 }
 
 
+// window.registerNotifyBlazorAuth = function (dotnetHelper) {
+//     window.blazorAuthHelper = dotnetHelper;
+// };
+
+// window.notifyBlazorAuth = function (accessToken) {
+//     if (window.blazorAuthHelper) {
+//         window.blazorAuthHelper.invokeMethodAsync('NotifyBlazorAuth', accessToken);
+//     }
+// };
+
+
 window.registerNotifyBlazorAuth = function (dotnetHelper) {
     window.blazorAuthHelper = dotnetHelper;
 };
 
-window.notifyBlazorAuth = function (accessToken) {
-    if (window.blazorAuthHelper) {
-        window.blazorAuthHelper.invokeMethodAsync('NotifyBlazorAuth', accessToken);
+window.unregisterNotifyBlazorAuth = function () {
+    window.blazorAuthHelper = null;
+};
+
+window.notifyBlazorAuth = async function (accessToken) {
+    if (!window.blazorAuthHelper) {
+        return;
+    }
+
+    try {
+        await window.blazorAuthHelper.invokeMethodAsync(
+            'NotifyBlazorAuth',
+            accessToken
+        );
+    }
+    catch (error) {
+        console.warn('Blazor auth interop is no longer available.', error);
+
+        // Remove stale reference
+        window.blazorAuthHelper = null;
     }
 };
+
 
 window.getClientTimeZone = () => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -210,4 +239,13 @@ window.downloadFileFromBase64 = (fileName, contentType, base64Data) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+};
+
+window.playNotificationSound = () => {
+    const audio = document.getElementById("notificationSound");
+
+    if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+    }
 };
