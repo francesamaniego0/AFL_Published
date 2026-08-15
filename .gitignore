@@ -1,6 +1,8 @@
 API/appsettings.json
 API/appsettings.Development.json
+API/Files/
 
 UI/appsettings.json
 UI/appsettings.Development.json
+
 
