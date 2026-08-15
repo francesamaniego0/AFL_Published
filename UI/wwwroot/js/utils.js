@@ -67,7 +67,7 @@ async function refreshToken(baseUrl) {
             xhrFields: {
                 withCredentials: true
             },
-            success: function (response) {
+            success: async function (response) {
 
                 console.log('/Auth/refresh',response);
 
