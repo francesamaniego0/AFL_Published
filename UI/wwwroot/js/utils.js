@@ -73,7 +73,7 @@ async function refreshToken(baseUrl) {
 
                 // tell Blazor auth state changed
                 if (window.notifyBlazorAuth) {
-                    window.notifyBlazorAuth(response.data.accessToken);
+                    await window.notifyBlazorAuth(response.data.accessToken);
                 }
 
                 resolve(true);

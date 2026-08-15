@@ -57,6 +57,39 @@ window.dashboardCharts = (function () {
         setTimeout(updateChartTheme, 75);
     }
 
+    function destroyCanvasChart(canvasId, canvas) {
+        const existingCharts = [
+            charts[canvasId],
+            Chart.getChart ? Chart.getChart(canvas) : null,
+            Chart.getChart ? Chart.getChart(canvasId) : null,
+            Chart.getChart ? Chart.getChart(canvas.getContext("2d")) : null
+        ].filter(Boolean);
+
+        if (Chart.instances) {
+            Object.values(Chart.instances).forEach(chart => {
+                if (chart?.canvas === canvas || chart?.canvas?.id === canvasId) {
+                    existingCharts.push(chart);
+                }
+            });
+        }
+
+        [...new Set(existingCharts)].forEach(chart => chart.destroy());
+        delete charts[canvasId];
+    }
+
+    function createChart(canvasId, canvas, config) {
+        try {
+            return new Chart(canvas, config);
+        } catch (error) {
+            if (!String(error?.message || "").includes("Canvas is already in use")) {
+                throw error;
+            }
+
+            destroyCanvasChart(canvasId, canvas);
+            return new Chart(canvas, config);
+        }
+    }
+
     function renderPieCharts(items) {
         if (!window.Chart || !Array.isArray(items)) {
             return;
@@ -74,11 +107,9 @@ window.dashboardCharts = (function () {
                 return;
             }
 
-            if (charts[canvasId]) {
-                charts[canvasId].destroy();
-            }
+            destroyCanvasChart(canvasId, canvas);
 
-            charts[canvasId] = new Chart(canvas, {
+            charts[canvasId] = createChart(canvasId, canvas, {
                 type: chartType,
                 data: {
                     labels: labels,
