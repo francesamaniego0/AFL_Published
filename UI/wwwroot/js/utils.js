@@ -249,3 +249,72 @@ window.playNotificationSound = () => {
         audio.play();
     }
 };
+
+window.downloadMasterFile = (data) => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    worksheet["!cols"] = [
+        { wpx: 80 },   // ID
+        { wpx: 200 },  // Name
+        { wpx: 200 }   // Location
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Masterfiles");
+
+    XLSX.writeFile(workbook, "Masterfiles_Data.xlsx");
+};
+
+window.downloadOffersImportTemplate = (data) => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    // Set all cells to Text format
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+    for (let row = range.s.r; row <= range.e.r; row++) {
+        for (let col = range.s.c; col <= range.e.c; col++) {
+            const cellAddress = XLSX.utils.encode_cell({
+                r: row,
+                c: col
+            });
+
+            if (worksheet[cellAddress]) {
+                worksheet[cellAddress].z = "@";
+            }
+        }
+    }
+
+    worksheet["!cols"] = [
+        { wpx: 180 }, // title
+        { wpx: 150 }, // type
+        { wpx: 200 }, // outlet
+        { wpx: 120 }, // phone
+        { wpx: 200 }, // location_detail
+        { wpx: 220 }, // link
+        { wpx: 120 }, // whatsapp
+        { wpx: 150 }, // facebook
+        { wpx: 150 }, // instagram
+        { wpx: 150 }, // snapchat
+        { wpx: 150 }, // tiktok
+        { wpx: 100 }, // order
+        { wpx: 350 }, // description
+        { wpx: 100 }, // points
+        { wpx: 220 }, // photo
+        { wpx: 350 }, // property_id
+        { wpx: 150 }, // tenant_type
+        { wpx: 150 }, // validity_from
+        { wpx: 150 }  // validity_to
+    ];
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Offers"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        "Offers_Import_Template.xlsx"
+    );
+};
