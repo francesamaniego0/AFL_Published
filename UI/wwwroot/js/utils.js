@@ -318,3 +318,93 @@ window.downloadOffersImportTemplate = (data) => {
         "Offers_Import_Template.xlsx"
     );
 };
+
+window.initOffersTableScrollbar = function () {
+
+    const topScroll = document.getElementById("offers-top-scroll");
+    const topInner = document.getElementById("offers-top-scroll-inner");
+    const tableContainer = document.querySelector(
+        "#offers-table .mud-table-container"
+    );
+
+    if (!topScroll || !topInner || !tableContainer) {
+        return;
+    }
+
+    // Prevent duplicate initialization
+    if (topScroll._offersInitialized) {
+        return;
+    }
+
+    topScroll._offersInitialized = true;
+
+    let syncing = false;
+
+    const updateScrollbar = () => {
+
+        const table = tableContainer.querySelector("table");
+
+        if (!table) {
+            return;
+        }
+
+        const width = Math.max(
+            table.scrollWidth,
+            tableContainer.scrollWidth
+        );
+
+        topInner.style.width = `${width}px`;
+
+        // Force scrollbar to exist when table is wider
+        topScroll.style.display =
+            width > topScroll.clientWidth
+                ? "block"
+                : "none";
+
+        // Keep both positions synchronized
+        topScroll.scrollLeft = tableContainer.scrollLeft;
+    };
+
+    topScroll.addEventListener("scroll", () => {
+
+        if (syncing) {
+            return;
+        }
+
+        syncing = true;
+
+        tableContainer.scrollLeft = topScroll.scrollLeft;
+
+        syncing = false;
+    });
+
+    tableContainer.addEventListener("scroll", () => {
+
+        if (syncing) {
+            return;
+        }
+
+        syncing = true;
+
+        topScroll.scrollLeft = tableContainer.scrollLeft;
+
+        syncing = false;
+    });
+
+    const observer = new ResizeObserver(() => {
+        requestAnimationFrame(updateScrollbar);
+    });
+
+    observer.observe(tableContainer);
+
+    const table = tableContainer.querySelector("table");
+
+    if (table) {
+        observer.observe(table);
+    }
+
+    // Initial
+    requestAnimationFrame(() => {
+        updateScrollbar();
+    });
+};
