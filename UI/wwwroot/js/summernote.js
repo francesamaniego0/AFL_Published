@@ -14,6 +14,14 @@
         $('#' + id).summernote('code', html);
     },
 
+    setDisabled: function (id, disabled) {
+        if (disabled) {
+            $('#' + id).summernote('disable');
+        } else {
+            $('#' + id).summernote('enable');
+        }
+    },
+
     destroy: function (id) {
         $('#' + id).summernote('destroy');
     }
