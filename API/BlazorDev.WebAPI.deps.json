@@ -16,6 +16,7 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.14",
           "Serilog": "4.2.0",
           "Serilog.AspNetCore": "8.0.3",
+          "Serilog.Sinks.Async": "2.1.0",
           "Serilog.Sinks.Console": "6.0.0",
           "Serilog.Sinks.File": "6.0.0",
           "Swashbuckle.AspNetCore": "6.6.2"
@@ -754,6 +755,17 @@
           "lib/net8.0/Serilog.Settings.Configuration.dll": {
             "assemblyVersion": "8.0.4.0",
             "fileVersion": "8.0.4.0"
+          }
+        }
+      },
+      "Serilog.Sinks.Async/2.1.0": {
+        "dependencies": {
+          "Serilog": "4.2.0"
+        },
+        "runtime": {
+          "lib/net8.0/Serilog.Sinks.Async.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.1.0.0"
           }
         }
       },
@@ -1524,6 +1536,13 @@
       "sha512": "sha512-pkxvq0umBKK8IKFJc1aV5S/HGRG/NIxJ6FV42KaTPLfDmBOAbBUB1m5gqqlGxzEa1MgDDWtQlWJdHTSxVWNx+Q==",
       "path": "serilog.settings.configuration/8.0.4",
       "hashPath": "serilog.settings.configuration.8.0.4.nupkg.sha512"
+    },
+    "Serilog.Sinks.Async/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-SnmRknWsSMgyo9wDXeZZCqSp48kkQYy44taSM6vcpxfiRICzSf09oLKEmVr0RCwQnfd8mJQ2WNN6nvhqf0RowQ==",
+      "path": "serilog.sinks.async/2.1.0",
+      "hashPath": "serilog.sinks.async.2.1.0.nupkg.sha512"
     },
     "Serilog.Sinks.Console/6.0.0": {
       "type": "package",
