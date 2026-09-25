@@ -232,6 +232,39 @@ window.chatScrollToBottom = (element) => {
 
 window.blazorGetWidth = () => window.innerWidth;
 
+// Chat message box: Enter sends, Shift+Enter inserts a newline. This has to be a real JS
+// keydown listener (not Blazor's @onkeydown:preventDefault) because Blazor Server decides
+// whether to preventDefault from the PREVIOUS render, before the .NET handler for this same
+// keystroke has even run - too late to stop the newline the browser is about to insert.
+//
+// Uses ONE delegated listener on document, bound exactly once for the page's lifetime (guarded
+// by window.__chatEnterToSendBound), instead of attaching directly to the textarea. Re-render
+// re-attaching per element was firing 2-3x per Enter press (MudTextField's autogrow can
+// recreate/re-render the textarea, and each attempt to (re)bind on it raced with the others).
+// Delegation sidesteps that entirely - there's nothing per-element to duplicate. The three chat
+// pages (Maintenance/Concierge/CustomerService) are separate routes, only one ever mounted at a
+// time, so a single global "which page is currently active" ref is sufficient.
+window.chatEnterToSend = (wrapperSelector, dotNetRef) => {
+    window.__chatEnterToSendRef = dotNetRef;
+    window.__chatEnterToSendSelector = wrapperSelector;
+
+    if (window.__chatEnterToSendBound) return;
+    window.__chatEnterToSendBound = true;
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" || e.shiftKey) return;
+        if (!(e.target instanceof HTMLTextAreaElement)) return;
+        if (!window.__chatEnterToSendSelector) return;
+        if (!e.target.closest(window.__chatEnterToSendSelector)) return;
+
+        e.preventDefault();
+
+        if (window.__chatEnterToSendRef) {
+            window.__chatEnterToSendRef.invokeMethodAsync("SendChatMessageFromJs");
+        }
+    });
+};
+
 window.downloadFileFromBase64 = (fileName, contentType, base64Data) => {
     const link = document.createElement("a");
     link.download = fileName;
