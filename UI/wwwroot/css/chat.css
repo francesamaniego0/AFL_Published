@@ -34,11 +34,7 @@ body.mud-theme-dark .thread-item:hover {
 }
 
 .thread-selected {
-    background-color: rgba(25, 118, 210, 0.15); /* primary-ish light */
-}
-
-body.mud-theme-dark .thread-selected {
-    background-color: rgba(144, 202, 249, 0.15);
+    background-color: rgba(var(--mud-palette-primary-rgb), 0.15);
 }
 
 .attachment-preview {
@@ -115,15 +111,15 @@ body.mud-theme-dark .thread-selected {
 }
 
 .customer .chat-bubble {
-    background: #ffffff;
-    color: #333333;
-    border: 1px solid #e0e0e0;
+    background: var(--mud-palette-surface);
+    color: var(--mud-palette-text-primary);
+    border: 1px solid var(--mud-palette-lines-default);
     border-bottom-left-radius: 6px;
 }
 
 .agent .chat-bubble {
-    background: #1976d2;
-    color: #ffffff;
+    background: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
     border-bottom-right-radius: 6px;
 }
 
