@@ -110,6 +110,10 @@ body.mud-theme-dark .thread-item:hover {
     margin-top: 4px;
 }
 
+.chat-bubble.sending {
+    opacity: .7;
+}
+
 .customer .chat-bubble {
     background: var(--mud-palette-surface);
     color: var(--mud-palette-text-primary);
