@@ -46,6 +46,20 @@ body.mud-theme-dark .thread-item:hover {
     max-width: 220px;
     border-radius: 8px;
     margin-top: 6px;
+    cursor: zoom-in;
+}
+
+/* ImageLightboxDialog: the whole image fits the screen, however large it is */
+.image-lightbox-content {
+    padding: 0 16px 16px;
+}
+
+.image-lightbox-image {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - 160px);
+    margin: 0 auto;
+    border-radius: 8px;
 }
 
 .chat-container {
