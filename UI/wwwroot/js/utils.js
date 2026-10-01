@@ -230,6 +230,16 @@ window.chatScrollToBottom = (element) => {
     });
 };
 
+// Chat search: bring the current occurrence of the word into the middle of the conversation,
+// like Messenger.
+window.chatScrollToCurrentHit = (element) => {
+    if (!element) return;
+
+    const target = element.querySelector('mark.chat-search-hit.current');
+
+    if (target) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+};
+
 window.blazorGetWidth = () => window.innerWidth;
 
 // Chat message box: Enter sends, Shift+Enter inserts a newline. This has to be a real JS

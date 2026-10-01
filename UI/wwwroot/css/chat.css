@@ -252,3 +252,95 @@ body.mud-theme-dark .thread-item:hover {
         border: 2px solid #2d2d2d;
     }
 
+/* Chat search (Messenger-style): every occurrence is marked, the current one stands out. */
+mark.chat-search-hit {
+    background: #ffe58a;
+    color: #1f1f1f;
+    padding: 0 1px;
+    border-radius: 3px;
+}
+
+    mark.chat-search-hit.current {
+        background: #f5a623;
+        box-shadow: 0 0 0 2px #f5a623;
+    }
+
+/* In-chat search bar: [ text ] 1/11  ^  v  options  x, with a "Match case" row under it. */
+.conversation-search {
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+}
+
+.conversation-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+    .conversation-search-bar .conversation-search-input {
+        flex: 1 1 auto;
+        margin: 0 !important;
+    }
+
+    .conversation-search-bar .search-count {
+        min-width: 48px;
+        text-align: center;
+        font-size: 13px;
+        opacity: .75;
+        white-space: nowrap;
+    }
+
+    .conversation-search-bar .search-options-active {
+        color: var(--mud-palette-primary);
+        background: var(--mud-palette-action-default-hover);
+    }
+
+.conversation-search-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 2px 0 4px;
+    font-size: 14px;
+}
+
+/* Resolve (Maintenance chat): Open / Resolved / All tabs, the list badge, and the divider that
+   stands in for a resolved issue's messages in the conversation. */
+.thread-status-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.badge-resolved {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--mud-palette-success);
+}
+
+.chat-resolved-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px auto;
+    padding: 4px 12px;
+    max-width: 90%;
+    border-radius: 16px;
+    font-size: 12px;
+    color: var(--mud-palette-text-secondary);
+    background: var(--mud-palette-background-gray);
+}
+
+    .chat-resolved-divider .resolved-note {
+        font-style: italic;
+    }
+
+/* Messages of an expanded resolved issue, shown for review. */
+.chat-row.resolved .chat-bubble {
+    opacity: .7;
+}
