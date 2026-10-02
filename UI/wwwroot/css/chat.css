@@ -325,12 +325,15 @@ mark.chat-search-hit {
     margin-top: 8px;
 }
 
+/* The type and RESOLVED badges sit together on the left of the meta row, the time on the right
+   (.thread-meta spaces its direct children apart). RESOLVED reuses .badge-type's size and shape. */
+.thread-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .badge-resolved {
-    margin-left: 6px;
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
     color: #fff;
     background: var(--mud-palette-success);
 }
@@ -353,6 +356,156 @@ mark.chat-search-hit {
     .chat-resolved-divider .resolved-note {
         font-style: italic;
     }
+
+/* Concerns (Maintenance chat): separate issues inside one chat. The bar under the header lists
+   them, a tag on each message names its concern, and tag mode lets staff tick messages to file.
+   --concern-color is set inline per concern. */
+.concern-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    background: var(--mud-palette-surface);
+}
+
+.concern-chip {
+    --concern-color: var(--mud-palette-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 2px 0 0;
+    border: 1px solid var(--concern-color);
+    border-radius: 14px;
+    background: transparent;
+    color: var(--mud-palette-text-primary);
+    font-size: 12px;
+    line-height: 1;
+}
+
+button.concern-chip {
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.concern-chip.active {
+    background: var(--concern-color);
+    color: #fff;
+}
+
+.concern-chip-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 4px 4px 10px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.concern-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--concern-color);
+}
+
+.concern-chip.active .concern-dot {
+    background: #fff;
+}
+
+.concern-count {
+    opacity: .7;
+}
+
+.concern-chip .mud-button-root {
+    color: inherit;
+    padding: 2px;
+}
+
+.chat-concern-tag {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: var(--concern-color);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Tag mode: a checkbox in the gutter beside each message that can be filed. */
+.chat-row.selecting {
+    position: relative;
+    padding-left: 36px;
+}
+
+.chat-select {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    /* Shows the state only: the click lands on the row, which does the toggling. */
+    pointer-events: none;
+}
+
+.chat-row.selectable {
+    cursor: pointer;
+}
+
+    /* A click ticks the message, so a drag-select of its text shouldn't start. */
+    .chat-row.selectable .chat-bubble {
+        user-select: none;
+    }
+
+.chat-row.selected .chat-bubble {
+    outline: 2px solid var(--mud-palette-primary);
+}
+
+.chat-tag-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--mud-palette-lines-default);
+    background: var(--mud-palette-background-gray);
+}
+
+.chat-tag-count {
+    margin-right: auto;
+    font-size: 13px;
+}
+
+/* "Resolve up to here" on a message: shown on hover, always on touch screens. */
+.chat-resolve-here {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+    .chat-resolve-here:hover,
+    .chat-resolve-here:focus-visible {
+        text-decoration: underline;
+    }
+
+.chat-row:hover .chat-resolve-here,
+.chat-resolve-here:focus-visible {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .chat-resolve-here {
+        opacity: 1;
+    }
+}
 
 /* Messages of an expanded resolved issue, shown for review. */
 .chat-row.resolved .chat-bubble {
