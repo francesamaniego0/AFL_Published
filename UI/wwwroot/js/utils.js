@@ -1,4 +1,36 @@
-﻿async function invokeApiAsync(baseUrl, url, payload, httpMethod = 'POST', retry = true) {
+﻿// The API's sign-in cookies belong to the API's domain, which the browser doesn't send to this site while
+// the two are on different domains. When a response carries tokens (login verify, banner select, refresh),
+// hand them to this site's server so its own side of the CMS can read them too.
+async function mirrorTokensToUiHost(response) {
+    const tokens = [response, response && response.data, response && response.Data]
+        .find(s => s && (s.accessToken || s.AccessToken));
+
+    if (!tokens) return;
+
+    try {
+        await fetch('/session/tokens', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                accessToken: tokens.accessToken || tokens.AccessToken,
+                refreshToken: tokens.refreshToken || tokens.RefreshToken
+            })
+        });
+    } catch (error) {
+        console.error('mirrorTokensToUiHost', error);
+    }
+}
+
+async function clearUiTokens() {
+    try {
+        await fetch('/session/clear', { method: 'POST', credentials: 'same-origin' });
+    } catch (error) {
+        console.error('clearUiTokens', error);
+    }
+}
+
+async function invokeApiAsync(baseUrl, url, payload, httpMethod = 'POST', retry = true) {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: baseUrl + url,
@@ -8,7 +40,8 @@
             },
             contentType: "application/json",
             data: JSON.stringify(payload),
-            success: function (response) {
+            success: async function (response) {
+                await mirrorTokensToUiHost(response);
                 resolve(response);
             },
             error: async function (err) {
@@ -26,6 +59,7 @@
                             return;
                         }
                         else {
+                            await clearUiTokens();
                             window.location.href = "account/user/login";
                             return;
                         }
@@ -33,6 +67,7 @@
                     catch (error) {
 
                         if (error.status === 403) { //Forbidden
+                            await clearUiTokens();
                             window.location.href = "account/user/login";
                             return;
                         }
@@ -71,6 +106,8 @@ async function refreshToken(baseUrl) {
 
                 console.log('/Auth/refresh',response);
 
+                await mirrorTokensToUiHost(response);
+
                 // tell Blazor auth state changed
                 if (window.notifyBlazorAuth) {
                     await window.notifyBlazorAuth(response.data.accessToken);
@@ -86,6 +123,28 @@ async function refreshToken(baseUrl) {
 
     });
 }
+
+// A fresh access token for the server side of the CMS (ApiClient) when it has none of its own: the
+// circuit's request predates sign-in, or the API's cookies never reached this site. Resolves to null
+// instead of rejecting so the caller can fall back to sending the user to login.
+window.getApiAccessToken = function (baseUrl) {
+    return new Promise((resolve) => {
+        $.ajax({
+            url: baseUrl + '/Auth/refresh',
+            type: 'POST',
+            xhrFields: {
+                withCredentials: true
+            },
+            success: async function (response) {
+                await mirrorTokensToUiHost(response);
+                resolve((response && response.data && response.data.accessToken) || null);
+            },
+            error: function () {
+                resolve(null);
+            }
+        });
+    });
+};
 
 window.hasAccessToken = function (baseUrl) {
     return new Promise((resolve) => {
