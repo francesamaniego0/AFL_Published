@@ -236,6 +236,14 @@ body.mud-theme-dark .thread-item:hover {
         font-weight: 700;
     }
 
+.thread-unit {
+    opacity: .6;
+    font-size: .72rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .thread-message {
     opacity: .75;
     font-weight: 400;
