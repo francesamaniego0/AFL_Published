@@ -7,6 +7,8 @@ async function mirrorTokensToUiHost(response) {
 
     if (!tokens) return;
 
+    rememberAccessTokenExpiry(tokens.accessToken || tokens.AccessToken);
+
     try {
         await fetch('/session/tokens', {
             method: 'POST',
@@ -23,6 +25,8 @@ async function mirrorTokensToUiHost(response) {
 }
 
 async function clearUiTokens() {
+    forgetAccessTokenExpiry();
+
     try {
         await fetch('/session/clear', { method: 'POST', credentials: 'same-origin' });
     } catch (error) {
@@ -30,7 +34,63 @@ async function clearUiTokens() {
     }
 }
 
+// The accessToken cookie is HttpOnly, so this script can't see when it runs out. Remember the expiry
+// of the last access token handed out instead, so an expired session is refreshed before a call rather
+// than after it fails with a 401 (which the browser always logs to the console as an error).
+const ACCESS_TOKEN_EXPIRY_KEY = 'accessTokenExpiresAt';
+const ACCESS_TOKEN_EXPIRY_MARGIN_MS = 15 * 1000;
+
+function rememberAccessTokenExpiry(accessToken) {
+    try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.exp) {
+            localStorage.setItem(ACCESS_TOKEN_EXPIRY_KEY, String(payload.exp * 1000));
+        }
+    } catch {
+        forgetAccessTokenExpiry();
+    }
+}
+
+function forgetAccessTokenExpiry() {
+    try {
+        localStorage.removeItem(ACCESS_TOKEN_EXPIRY_KEY);
+    } catch { }
+}
+
+function isAccessTokenExpired() {
+    try {
+        const expiresAt = Number(localStorage.getItem(ACCESS_TOKEN_EXPIRY_KEY));
+        return expiresAt > 0 && Date.now() >= expiresAt - ACCESS_TOKEN_EXPIRY_MARGIN_MS;
+    } catch {
+        return false;
+    }
+}
+
+// The API's own message when it sent one. A request that never got an answer (server down, blocked by CORS, network
+// lost) has status 0 and no body, and an IIS error page isn't JSON, so neither may throw here: that would leave the
+// caller's promise hanging and the page stuck.
+function errorMessage(err) {
+    if (!err || err.status === 0) {
+        return 'Unable to reach the server. Please check your connection and try again.';
+    }
+
+    try {
+        const body = JSON.parse(err.responseText);
+        if (body && (body.message || body.Message)) {
+            return body.message || body.Message;
+        }
+    } catch { }
+
+    return err.statusText || 'Unexpected error';
+}
+
 async function invokeApiAsync(baseUrl, url, payload, httpMethod = 'POST', retry = true) {
+    // Refresh up front when the access token is known to have run out. If that fails, send the call
+    // anyway and let the 401 handling below decide (a sign-in call needs no token at all).
+    if (retry && isAccessTokenExpired() && !(await refreshToken(baseUrl))) {
+        forgetAccessTokenExpiry();
+    }
+
     return new Promise((resolve, reject) => {
         $.ajax({
             url: baseUrl + url,
@@ -73,77 +133,77 @@ async function invokeApiAsync(baseUrl, url, payload, httpMethod = 'POST', retry 
                         }
 
                         resolve({
-                            Data: { status: 'Unexpected Error' },
+                            Data: null,
                             IsSuccess: false,
-                            Message: error
+                            Message: errorMessage(error)
                         });
                     }
 
                     return;
                 }
 
-                console.log("Fetch Error", err);
+                console.log("Fetch Error", baseUrl + url, err.status, err);
 
+                // Data stays null: callers deserialize it into their own type (a list, a DTO), and an object
+                // like { status } cannot convert to a list - the exception took down the whole circuit.
                 resolve({
-                    Data: { status: err.status },
+                    Data: null,
                     IsSuccess: false,
-                    Message: JSON.parse(err.responseText).message
+                    Message: errorMessage(err)
                 });
             }
         });
     });
 }
-async function refreshToken(baseUrl) {
-    return new Promise((resolve, reject) => {
+// Calls that start together (the nav menu, the page, ApiClient) share one /Auth/refresh instead of each
+// sending their own: every refresh replaces the refresh token, so parallel ones would race each other.
+// Resolves to the refresh response, or null when the session can't be refreshed.
+let refreshInFlight = null;
 
-        $.ajax({
-            url: baseUrl + '/Auth/refresh',
-            type: "POST",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: async function (response) {
-
-                console.log('/Auth/refresh',response);
-
-                await mirrorTokensToUiHost(response);
-
-                // tell Blazor auth state changed
-                if (window.notifyBlazorAuth) {
-                    await window.notifyBlazorAuth(response.data.accessToken);
+function requestRefresh(baseUrl) {
+    if (!refreshInFlight) {
+        refreshInFlight = new Promise((resolve) => {
+            $.ajax({
+                url: baseUrl + '/Auth/refresh',
+                type: 'POST',
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: async function (response) {
+                    await mirrorTokensToUiHost(response);
+                    resolve(response);
+                },
+                error: function () {
+                    resolve(null);
                 }
-
-                resolve(true);
-            },
-            error: function (err) {
-                console.error('err/Auth/refresh', err);
-                resolve(false);
-            }
+            });
+        }).finally(() => {
+            refreshInFlight = null;
         });
+    }
 
-    });
+    return refreshInFlight;
+}
+
+async function refreshToken(baseUrl) {
+    const response = await requestRefresh(baseUrl);
+
+    if (!response) return false;
+
+    // tell Blazor auth state changed
+    if (window.notifyBlazorAuth) {
+        await window.notifyBlazorAuth(response.data.accessToken);
+    }
+
+    return true;
 }
 
 // A fresh access token for the server side of the CMS (ApiClient) when it has none of its own: the
 // circuit's request predates sign-in, or the API's cookies never reached this site. Resolves to null
 // instead of rejecting so the caller can fall back to sending the user to login.
-window.getApiAccessToken = function (baseUrl) {
-    return new Promise((resolve) => {
-        $.ajax({
-            url: baseUrl + '/Auth/refresh',
-            type: 'POST',
-            xhrFields: {
-                withCredentials: true
-            },
-            success: async function (response) {
-                await mirrorTokensToUiHost(response);
-                resolve((response && response.data && response.data.accessToken) || null);
-            },
-            error: function () {
-                resolve(null);
-            }
-        });
-    });
+window.getApiAccessToken = async function (baseUrl) {
+    const response = await requestRefresh(baseUrl);
+    return (response && response.data && response.data.accessToken) || null;
 };
 
 window.hasAccessToken = function (baseUrl) {
@@ -155,7 +215,6 @@ window.hasAccessToken = function (baseUrl) {
                 withCredentials: true
             },
             success: function (response) {
-                console.log('/Auth/has-access-token', response);
                 resolve(response === true);
             },
             error: function (err) {

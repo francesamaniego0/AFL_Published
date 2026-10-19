@@ -228,3 +228,47 @@ body.mud-theme-dark .mud-nav-group.nav-group .mud-navmenu {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,.15);
     }
+
+/* Small "Reconnecting…" hint in place of Blazor's full-screen reconnect overlay (see App.razor, js/reconnect.js).
+   It doesn't block the page, and waits a moment before appearing so short blips go unnoticed. */
+#components-reconnect-modal {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 10000;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(33, 33, 33, .85);
+    color: #fff;
+    font-size: 13px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+    pointer-events: none;
+}
+
+    #components-reconnect-modal.components-reconnect-show,
+    #components-reconnect-modal.components-reconnect-failed {
+        display: flex;
+        animation: reconnect-hint-in .3s ease 1.5s both;
+    }
+
+    #components-reconnect-modal .reconnect-hint-spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(255, 255, 255, .35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: reconnect-hint-spin .8s linear infinite;
+    }
+
+@keyframes reconnect-hint-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes reconnect-hint-spin {
+    to { transform: rotate(360deg); }
+}
